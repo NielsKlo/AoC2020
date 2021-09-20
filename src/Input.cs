@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.IO;
-using System;
 
 class Input{
     public static List<string> GetStrings(string file){
