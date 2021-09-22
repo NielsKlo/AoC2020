@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 class DayNine{
@@ -5,7 +6,9 @@ class DayNine{
         List<string> strList = Input.GetStrings("input_files/Day09.txt");
         List<long> longList = GetNumbers(strList);
         long irregularNumber = 144381670; //GetFirstIrregularNumber(longList);
-        FindContiguousSet(irregularNumber, longList);
+        List<long> contiguousList = FindContiguousSet(irregularNumber, longList);
+        long answer = FindEncryptionWeakness(contiguousList);
+        System.Console.WriteLine(answer);
     }
 
     private List<long> GetNumbers(List<string> strList){
@@ -38,7 +41,31 @@ class DayNine{
         return possibilities.Contains(longList[index]);
     }
 
-    private void FindContiguousSet(long irregularNumber, List<long> longList){
-        
+    private List<long> FindContiguousSet(long irregularNumber, List<long> longList){
+        for(int i = 0; i < longList.Count; i++){
+            long sum = 0;
+            List<long> partList = new List<long>();
+            for(int j = i; j < longList.Count; j++){
+                sum += longList[j];
+                partList.Add(longList[j]);
+
+                if(sum > irregularNumber) break;
+                if(sum == irregularNumber){
+                    System.Console.WriteLine("Found the list!");
+                    return partList;
+                }
+            }
+        }
+        return null;
+    }
+
+    private long FindEncryptionWeakness(List<long> contiguousList){
+        long lowest = Int64.MaxValue;
+        long highest = 0;
+        foreach(long number in contiguousList){
+            if(number < lowest) lowest = number;
+            if(number > highest) highest = number;
+        }
+        return lowest + highest;
     }
 }
