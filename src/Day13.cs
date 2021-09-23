@@ -2,16 +2,13 @@ using System;
 using System.Collections.Generic;
 
 class DayThirteen{
-    int earliestTime;
-
     public void Run(){
         List<string> strList = Input.GetStrings("input_files/Day13.txt");
-        earliestTime = Int32.Parse(strList[0]);
         List<int> bussIDs = GetBussIDs(strList[1]);
-        bussIDs.ForEach(Console.WriteLine);
-        int waitingTime = 0;
-        int fastestBuss = FindFastestBuss(bussIDs, out waitingTime);
-        System.Console.WriteLine("Answer: {0}", (fastestBuss * waitingTime));
+        List<string> allSlots = new List<string>(strList[1].Split(","));
+        List<Buss> busses = MakeBusses(bussIDs, allSlots);
+        busses.ForEach(Console.WriteLine);
+
     }
 
     private List<int> GetBussIDs(string data){
@@ -23,18 +20,49 @@ class DayThirteen{
         return busses;
     }
 
-    private int FindFastestBuss(List<int> busses, out int wait){
-        int fastestBuss = 0;
-        int shortestWait = Int32.MaxValue;
+    private int FindOffset(int bussId, List<string> allSlots){
+        int index = allSlots.FindIndex((slot) => slot.Equals(bussId.ToString()));
+        return - (29 - index);
+    }
+
+    private List<Buss> MakeBusses(List<int> busses, List<string> allSlots){
+        List<Buss> bussList = new List<Buss>();
         foreach(int buss in busses){
-            int nextTime = buss * (earliestTime / buss + 1);
-            int waitingTime = nextTime - earliestTime;
-            if(waitingTime < shortestWait) {
-                shortestWait = waitingTime;
-                fastestBuss = buss;
-            }
+            bussList.Add(new Buss(buss, FindOffset(buss, allSlots)));
         }
-        wait = shortestWait;
-        return fastestBuss;
+        return bussList;
+    }
+
+    // private int FindFastestBuss(List<int> busses, out int wait){
+    //     int fastestBuss = 0;
+    //     int shortestWait = Int32.MaxValue;
+    //     foreach(int buss in busses){
+    //         int nextTime = buss * (earliestTime / buss + 1);
+    //         int waitingTime = nextTime - earliestTime;
+    //         if(waitingTime < shortestWait) {
+    //             shortestWait = waitingTime;
+    //             fastestBuss = buss;
+    //         }
+    //     }
+    //     wait = shortestWait;
+    //     return fastestBuss;
+    // }
+
+    private int FindEarliestTime(List<int> busses){
+        return 0;
+    }
+}
+
+class Buss{
+    public readonly int id;
+    public readonly int offset;
+
+    public Buss(int id, int offset){
+        this.id = id;
+        this.offset = offset;
+    }
+
+    public override string ToString(){
+        return "id: " + id + ", offset: " + offset;
     }
 }
