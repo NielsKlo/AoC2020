@@ -76,18 +76,34 @@ class Map {
 
     private int GetOccupiedNeighbourCount(int i, int j){
         int count = 0;
-        for(int y = i - 1; y < i + 2; y++){
-            if(y < 0 || y >= this.lineCount) continue;
-            for(int x = j - 1; x < j + 2; x++){
-                if(x < 0 || x >= this.charCount) continue;
-                if(y == i && x == j) continue;
 
-                if(oldMap[y, x] == '#') count++;
+        for(int a = -1; a < 2; a++){
+            for(int b = -1; b < 2; b++){
+                if(a == 0 && b == 0) continue;
+                if(DirectionHasSeat(i, j, a, b)) count++;
             }
         }
         return count;
+    }
 
-        //TODO: pass two direction parameters to a function that extrapolates them and go on in there.
+    private bool DirectionHasSeat(int i, int j, int iDirection, int jDirection){
+        int potentialI = i + iDirection;
+        int potentialJ = j + jDirection;
+
+        for(int multiplier = 2; IsInArray(potentialI, potentialJ); multiplier++){
+            if(oldMap[potentialI, potentialJ] == '#') return true;
+            if(oldMap[potentialI, potentialJ] == 'L') return false;
+
+            potentialI = i + multiplier * iDirection;
+            potentialJ = j + multiplier * jDirection;
+        }
+
+        return false;
+    }
+
+    private bool IsInArray(int potentialI, int potentialJ){
+        return potentialI >= 0 && potentialI < lineCount
+            && potentialJ >= 0 && potentialJ < charCount;
     }
 
     public int GetOccupiedSeatCount(){
