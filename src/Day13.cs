@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 class DayThirteen{
     public void Run(){
+        Console.WriteLine(  System.IO.Directory.GetCurrentDirectory());
         List<string> strList = Input.GetStrings("input_files/Day13.txt");
         List<int> bussIDs = GetBussIDs(strList[1]);
         List<string> allSlots = new List<string>(strList[1].Split(","));
