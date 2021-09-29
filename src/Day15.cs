@@ -2,25 +2,45 @@ using System.Collections.Generic;
 
 class DayFifteen{
     public void Run(){
-        int[] input = new int[]{15,12,0,14,3,1};
-        List<int> sequence = MakeSequence(input);
-        System.Console.WriteLine(sequence[29999999]);
+        int[] input = new int[]{ 15, 12, 0, 14, 3, 1 };
+        Dictionary<int, int> memory = StartMemory(input);
+        int value = IterateSequence(memory, targetIndex: 29_999_998);
+        System.Console.WriteLine($"Value is: {value}");
     }
 
-    private List<int> MakeSequence(int[] input){
-        List<int> sequence = new List<int>(input);
+    private Dictionary<int, int> StartMemory(int[] input)
+    {
+        Dictionary<int, int> memory = new();
+        for(int i = 0; i < input.Length; i++)
+        {
+            memory.Add(input[i], i);
+        }
+        return memory;
+    }
 
-        for(int i = 5; i < 30000000; i++){
-            if(i % 100000 == 0) System.Console.WriteLine(i);
-            int nextNumber = FindNextNumber(sequence);
-            sequence.Add(nextNumber);
+    private int IterateSequence(Dictionary<int, int> memory, int targetIndex)
+    {
+        int nextValue = 0;
+
+        for (int i = memory.Count; i <= targetIndex; i++)
+        {
+            if (memory.ContainsKey(nextValue))
+            {
+                int lastIndex = memory[nextValue];
+                memory[nextValue] = i;
+                nextValue = i - lastIndex;
+            } else
+            {
+                memory[nextValue] = i;
+                nextValue = 0;
+            }
         }
 
-        return sequence;
+        return nextValue;
     }
 
     private int FindNextNumber(List<int> sequence){
-        int lastNumber = sequence[sequence.Count - 1];
+        int lastNumber = sequence[^1];
         int distance = 0;
 
         for(int i = sequence.Count - 2; i >= 0; i--){
