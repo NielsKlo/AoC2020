@@ -9,8 +9,13 @@ class DaySixteen
         List<List<string>> splitLists = SplitLists(strList);
         List<Field> fieldList = MakeFields(splitLists[0]);
         List<Ticket> ticketList = MakeTickets(splitLists[2]);
+        Ticket myTicket = MakeTickets(splitLists[1])[0];
+
         DiscardInvalidTickets(fieldList, ticketList);
-        FigureOutFields(fieldList, ticketList);
+        Field[] solvedFields = FigureOutFields(fieldList, ticketList);
+
+        long answer = CalculateAnswer(solvedFields, myTicket);
+        System.Console.WriteLine(answer);
 
     }
 
@@ -89,6 +94,7 @@ class DaySixteen
         }
         return true;
     }
+    
     private void RemoveInvalidTicketsFromList(List<Ticket> ticketList, List<Ticket> invalidTickets)
     {
         foreach(Ticket invalidTicket in invalidTickets)
@@ -97,31 +103,34 @@ class DaySixteen
         }
     }
 
-    private void FigureOutFields(List<Field> fieldList, List<Ticket> ticketList)
+    private Field[] FigureOutFields(List<Field> fieldList, List<Ticket> ticketList)
     {
         Field[] solvedFields = new Field[fieldList.Count];
         List<List<int>> ticketValuesByPosition = GetTicketValuesByPosition(ticketList);
 
-
-    }
-
-    private int CountValidPositions(Field field, List<List<int>> ticketValuesByPosition)
-    {
-        int count = 0;
-        foreach(List<int> position in ticketValuesByPosition)
+        while(fieldList.Count > 0) 
         {
-            if (CheckValuesConformToField(field, position)) count++;
-        }
-        return count;
-    }
+            Field toRemove = null;
+            int ticketListIndex = 100;
+            foreach(Field field in fieldList)
+            {
+                int count = CountValidPositions(field, ticketValuesByPosition, out int index);
+                if(count == 1) 
+                {
+                    toRemove = field;
+                    ticketListIndex = index;
+                    break;
+                }
+            }
 
-    private bool CheckValuesConformToField(Field field, List<int> values)
-    {
-        foreach(int value in values)
-        {
-            if (!field.IsValid(value)) return false;
+            if(toRemove != null){
+                solvedFields[ticketListIndex] = toRemove;
+                fieldList.Remove(toRemove);
+                ticketValuesByPosition.RemoveAt(ticketListIndex);
+                ticketValuesByPosition.Insert(ticketListIndex, new List<int>(){1000});
+            }
         }
-        return true;
+        return solvedFields;
     }
 
     private List<List<int>> GetTicketValuesByPosition(List<Ticket> ticketList)
@@ -137,11 +146,46 @@ class DaySixteen
         }
         return ticketValuesByPosition;
     }
+
+    private int CountValidPositions(Field field, List<List<int>> ticketValuesByPosition, out int index)
+    {
+        int count = 0;
+        index = 0;
+        foreach(List<int> position in ticketValuesByPosition)
+        {
+            if (CheckValuesConformToField(field, position)) 
+            {
+                count++;
+                index = ticketValuesByPosition.IndexOf(position);
+            }
+        }
+        return count;
+    }
+
+    private bool CheckValuesConformToField(Field field, List<int> values)
+    {
+        foreach(int value in values)
+        {
+            if (!field.IsValid(value)) return false;
+        }
+        return true;
+    }
+
+    private long CalculateAnswer(Field[] solvedFields, Ticket myTicket){
+        long answer = 1;
+        for(int i = 0; i < solvedFields.Length; i++){
+            System.Console.WriteLine($"{solvedFields[i].name}, {answer}");
+            if(solvedFields[i].name.StartsWith("departure")){
+                answer *= myTicket.values[i];
+            }
+        }
+        return answer;
+    }
 }
 
 class Field
 {
-    string name;
+    public readonly string name;
     int lowerOne;
     int higherOne;
     int lowerTwo;
