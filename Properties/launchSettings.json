@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "First": {
+      "commandName": "Project",
+      "workingDirectory": "C:\\Users\\sogyo\\Desktop\\AoC2020\\AoC2020"
+    }
+  }
+}
