@@ -25,9 +25,10 @@ namespace AOC2020
                 string s;
                 while((s = reader.ReadLine()) != null){
                     int number = Int32.Parse(s);
-                        highNumbers.Add(number);
-                        lowNumbers.Add(number);
-                        medNumbers.Add(number);
+                    
+                    highNumbers.Add(number);
+                    lowNumbers.Add(number);
+                    medNumbers.Add(number);
                 }
             }
         }
